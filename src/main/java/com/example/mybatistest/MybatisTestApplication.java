@@ -1,23 +1,17 @@
 package com.example.mybatistest;
 
-import com.example.mybatistest.dao.Student;
-import com.example.mybatistest.dao.StudentMapper;
-import com.example.mybatistest.util.SqlCondition;
-import com.google.common.collect.Lists;
+//import com.example.mybatistest.dao.StudentMapper;
+
+import com.example.mybatistest.mapper.StudentMapper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.lang.reflect.Field;
-import java.util.Date;
-import java.util.UUID;
 
 @SpringBootApplication
-@MapperScan(basePackages = {"com.example.mybatistest.dao"})
+@MapperScan(basePackages = {"com.example.mybatistest.mapper"})
 @EnableTransactionManagement
 public class MybatisTestApplication implements CommandLineRunner {
 
@@ -31,10 +25,10 @@ public class MybatisTestApplication implements CommandLineRunner {
 
     @Override
     public void run(String... strings) throws Exception {
-        Student student = new Student();
-        student.setId(UUID.randomUUID().toString());
-        student.setName("123123");
-        studentMapper.insert(student);
+//        Student student = new Student();
+//        student.setId(UUID.randomUUID().toString());
+//        student.setName("123123");
+//        studentMapper.insert(student);
 
 
 //        Student student2 = new Student();
@@ -49,15 +43,15 @@ public class MybatisTestApplication implements CommandLineRunner {
 //        studentMapper.deleteById("a2a89eeb-452f-41ad-b8e8-4dcd80f7a6e5");
 
 
-        System.out.println(studentMapper.selectById("e548e609-5ca2-4e85-b81e-b365c6d598a8"));
-        System.out.println(studentMapper.select());
+//        System.out.println(studentMapper.selectById("e548e609-5ca2-4e85-b81e-b365c6d598a8"));
+//        System.out.println(studentMapper.select());
 
 
-        SqlCondition sqlCondition = new SqlCondition("name=#{p1}", "小明");
-        System.out.println(studentMapper.selectWhere(sqlCondition));
-
-        System.out.println(studentMapper.count());
-        System.out.println(studentMapper.countWhere(sqlCondition));
+//        SqlCondition sqlCondition = new SqlCondition("name=#{p1}", "小明");
+//        System.out.println(studentMapper.selectWhere(sqlCondition));
+        System.out.println(studentMapper.countWhere("name LIKE ?", "%小%"));
+//        System.out.println(studentMapper.count());
+//        System.out.println(studentMapper.countWhere(sqlCondition));
 
 
     }

@@ -9,7 +9,9 @@ import javax.persistence.Table;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static com.example.mybatistest.util.MyBatisExtUtils.camelToUnderline;
 
@@ -78,7 +80,6 @@ public abstract class BaseSqlProvider<E, ID> {
             }
         }
 
-
         //主键
         this.idField = MyBatisExtUtils.getIdField(entityClass);
         this.idColumnName = MyBatisExtUtils.camelToUnderline(idField.getName());
@@ -89,8 +90,6 @@ public abstract class BaseSqlProvider<E, ID> {
         this.fields.add(0, idField);
         this.columnNames.addAll(this.columnNames);
         this.columnNames.add(0, MyBatisExtUtils.camelToUnderline(idField.getName()));
-
-
     }
 
     /////////////////////////////////////////////////保存方法////////////////////////////////////////
@@ -158,7 +157,6 @@ public abstract class BaseSqlProvider<E, ID> {
 
         String setValueSql = sqlBuilder.toString().replaceFirst(",", "");
         return "UPDATE " + tableName + " SET " + setValueSql + " WHERE " + idColumnName + "=#{id}";//set sql
-
     }
 
 
@@ -181,8 +179,6 @@ public abstract class BaseSqlProvider<E, ID> {
 
         String setValueSql = sqlBuilder.toString().replaceFirst(",", "");
         return "UPDATE " + tableName + " SET " + setValueSql + " WHERE " + idColumnName + "=#{id}";//set sql
-
-
     }
 
 
@@ -192,17 +188,13 @@ public abstract class BaseSqlProvider<E, ID> {
      * 根据id删除数据
      */
     public String deleteById(ID id) {
-
-
         return "DELETE FROM " + tableName + " WHERE " + idColumnName + "=#{id}";
-
     }
 
     /**
      * 删除所有数据
      */
     public String delete() {
-
         return "DELETE FROM " + tableName;
     }
 
@@ -218,7 +210,6 @@ public abstract class BaseSqlProvider<E, ID> {
         for (int i = 0; i < list.size(); i++) {
             idsStr.append(",#{list[").append(i).append("]}");
         }
-
         //
         String sql = "DELETE FROM " + tableName + " WHERE   " + idColumnName + " IN  (" + idsStr.toString().replaceFirst(",", "") + ")";
         System.out.println(sql);
@@ -232,7 +223,6 @@ public abstract class BaseSqlProvider<E, ID> {
      * 通过id查找
      */
     public String selectById(ID id) {
-
         //sql
         return "SELECT * FROM " + tableName + " WHERE " + idColumnName + "=#{id}";
     }
@@ -247,10 +237,15 @@ public abstract class BaseSqlProvider<E, ID> {
     }
 
 
-    public String selectWhere(SqlCondition sqlCondition) {
+    public String selectWhere(Map<String, Object> map) {
+        Object[] params = (Object[]) map.get("param2");
+        String sqlCondition = (String) map.get("param1");
+
+        for (int i = 0; i < params.length; i++) {
+            sqlCondition = sqlCondition.replaceFirst("\\?", "#{param2[" + i + "]}");
+        }
         //sql
-        String sql = "SELECT * FROM " + tableName + " WHERE " + sqlCondition.getSql();
-        return sql;
+        return "SELECT * FROM " + tableName + " WHERE " + sqlCondition;
     }
 
 
@@ -265,11 +260,8 @@ public abstract class BaseSqlProvider<E, ID> {
 
         for (int i = 0; i < list.size(); i++) {
             idsStr.append(",#{list[").append(i).append("]}");
-        }
-
-        //
-        String sql = "SELECT  * FROM " + tableName + " WHERE   " + idColumnName + " IN  (" + idsStr.toString().replaceFirst(",", "") + ")";
-        return sql;
+        }//
+        return "SELECT  * FROM " + tableName + " WHERE   " + idColumnName + " IN  (" + idsStr.toString().replaceFirst(",", "") + ")";
     }
 
 
@@ -277,14 +269,16 @@ public abstract class BaseSqlProvider<E, ID> {
     public String count() {
         //sql
         return "SELECT COUNT(*) FROM " + tableName;
-
     }
 
-    public String countWhere(SqlCondition sqlCondition) {
+    public String countWhere(Map<String, Object> map) {
+        Object[] params = (Object[]) map.get("param2");
+        String sqlCondition = (String) map.get("param1");
+
+        for (int i = 0; i < params.length; i++) {
+            sqlCondition = sqlCondition.replaceFirst("\\?", "#{param2[" + i + "]}");
+        }
         //sql
-        return "SELECT COUNT(*) FROM " + tableName + " WHERE " + sqlCondition.getSql();
-
+        return "SELECT count(*) FROM " + tableName + " WHERE " + sqlCondition;
     }
-
-
 }
